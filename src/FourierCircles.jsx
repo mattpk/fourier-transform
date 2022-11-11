@@ -6,6 +6,8 @@ import { useEffect } from 'react';
 function FourierCircles({ coordinates }) {
   const canvasRef = useRef(null);
   const [time, setTime] = useState(0);
+  // Canvas is iterative, react is declarative so I need this ref hack
+  const trail = useRef(new Set);
   const complexCoords = useMemo(() => normalizeCoordinates(coordinates), [coordinates]);
   const fourierResults = useMemo(() => fourierTransform(complexCoords), [complexCoords]);
   const fourierWithFreqs = fourierResults.map((f, index) => [f, index - floor(fourierResults.length / 2)]);
@@ -14,7 +16,7 @@ function FourierCircles({ coordinates }) {
   // filter out the circle with no frequency and use it as initial offset
   let noFrequencyCircle = fourierWithFreqs.find(f => f[1] == 0);
   let fourierSorted = fourierWithFreqs.filter(f => {
-    return mag(f[0]) > 0.001 && f[1] != 0;
+    return mag(f[0]) > Constants.MIN_CIRCLE && f[1] != 0;
   })
     .sort((a, b) => {
       return mag(b[0]) - mag(a[0]);
@@ -25,6 +27,23 @@ function FourierCircles({ coordinates }) {
   if (ctx && noFrequencyCircle) {
     ctx.clearRect(0, 0, Constants.WIDTH, Constants.HEIGHT)
 
+    // draw trail
+    const trailArray = Array.from(trail.current);
+    ctx.strokeStyle="#8fc4ff"
+    ctx.lineWidth="3"
+    ctx.beginPath();
+    for (let i = 0; i < trailArray.length; i++) {
+      const coord = trailArray[i];
+      if (i == 0) {
+        ctx.moveTo(coord[0], coord[1]);
+      } else {
+        ctx.lineTo(coord[0], coord[1]); 
+      }
+    }
+    ctx.stroke();
+    ctx.strokeStyle="black"
+    ctx.lineWidth="1"
+
     ctx.beginPath();
     let base = noFrequencyCircle[0];
     let coord = unnormalize(base);
@@ -34,7 +53,7 @@ function FourierCircles({ coordinates }) {
       const frequency = fourierSorted[f][1];
       const a = bin.re; const b = bin.im
       // rotate the 
-      let progress = (Date.now() % 10000) / 10000;
+      let progress = (Date.now() % Constants.MS_TO_DRAW) / Constants.MS_TO_DRAW;
       // frequency is rotations per second.
       let rotatedBin = multiply(bin, pow(e, multiply(i, 2 * pi * frequency * progress)))
 
@@ -48,15 +67,22 @@ function FourierCircles({ coordinates }) {
       coord = unnormalize(base);
       ctx.lineTo(coord[0], coord[1])
       ctx.stroke();
+      
+      if (f == fourierSorted.length - 1) {
+        trail.current.add(coord);
+      }
     }
   }
 
   useEffect(() => {
-    const interval = setInterval(() => setTime(Date.now() % 1000), Constants.INPUT_FREQUENCY);
+    const interval = setInterval(() => setTime(Date.now() % 1000), 25);
     return () => {
       clearInterval(interval);
     };
   }, [])
+  useEffect(() => {
+    trail.current.clear();
+  }, [fourierResults]);
 
   return (
     <canvas

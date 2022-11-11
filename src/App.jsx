@@ -9,13 +9,13 @@ function App() {
 
   return (
     <>
-      <h2>Fourier Transforms</h2>
+      <h2>Fourier Transform by <a href="https://github.com/mattpk/fourier-transform">mattpk</a></h2>
       <p>Draw a shape:</p>
       <DrawingInput
         coordinates={coordinates}
         setCoordinates={setCoordinates}
       />
-      <p>tbd: some cool fourier thing here</p>
+      <p>Below is your drawing drawn with circles computed using a fourier transform.</p>
       <FourierCircles coordinates={coordinates} />
     </>
   )
