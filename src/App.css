@@ -1,0 +1,9 @@
+body {
+    font-family: 'Lucida Sans', Verdana, sans-serif;
+    margin-left: 2em;
+    margin-right: 2em;
+}
+
+#canvas {
+    background-color: #dfe4ea;
+}

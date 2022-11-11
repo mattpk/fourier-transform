@@ -1,11 +1,19 @@
 import './App.css'
-import {sqrt} from 'mathjs'
+import DrawingInput from './DrawingInput'
+import { useRef, useState } from 'react'
+import { sqrt } from 'mathjs'
 
 function App() {
+  const [coordinates, setCoordinates] = useState([]);
+
   return (
-    <div>
-      hello nice {sqrt(4)} see you
-    </div>
+    <>
+      <h2>Fourier Transforms</h2>
+      <DrawingInput
+        coordinates={coordinates}
+        setCoordinates={setCoordinates}
+      />
+    </>
   )
 }
 
