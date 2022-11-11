@@ -1,5 +1,6 @@
 import './App.css'
 import DrawingInput from './DrawingInput'
+import FourierCircles from './FourierCircles'
 import { useRef, useState } from 'react'
 import { sqrt } from 'mathjs'
 
@@ -15,6 +16,7 @@ function App() {
         setCoordinates={setCoordinates}
       />
       <p>tbd: some cool fourier thing here</p>
+      <FourierCircles coordinates={coordinates} />
     </>
   )
 }

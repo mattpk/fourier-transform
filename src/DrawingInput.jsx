@@ -1,8 +1,5 @@
 import { useRef, useState, useEffect } from 'react'
-
-const WIDTH = 400
-const HEIGHT = 300
-const INPUT_FREQUENCY = 120
+import * as Constants from './Constants'
 
 function DrawingInput({ coordinates, setCoordinates }) {
   const canvasRef = useRef(null)
@@ -13,18 +10,35 @@ function DrawingInput({ coordinates, setCoordinates }) {
   const [lastCoordRecorded, setLastCoordRecorded] = useState(0);
 
   useEffect(() => {
-    if (coordinates.length > 0) {
-      const coord = coordinates[coordinates.length - 1];
-      ctx.beginPath();
-      ctx.arc(coord[0], coord[1], 4, 0, 2 * Math.PI, false);  // a circle
-      ctx.fill();
+    if (!ctx) {
+      return;
+    } 
+    ctx.clearRect(0, 0, Constants.WIDTH, Constants.HEIGHT)
+    let prevCoord = null;
+    // draw points
+    // for (let i = 0; i < coordinates.length; i++) {
+    //   const coord = coordinates[i];
+    //   ctx.beginPath();
+    //   ctx.arc(coord[0], coord[1], 2, 0, 2 * Math.PI, false);
+    //   ctx.fill();
+    // }
+    // draw lines
+    for (let i = 0; i < coordinates.length; i++) {
+      const coord = coordinates[i];
+      if (i == 0) {
+        ctx.beginPath();
+        ctx.moveTo(coord[0], coord[1]);
+      } else {
+        ctx.lineTo(coord[0], coord[1]);
+      }
     }
+    ctx.closePath();
+    ctx.stroke();
   })
 
   const handleDown = (e) => {
     setIsPressed(true)
     const coord = convertEventToCoord(e, canvasRef.current)
-    ctx?.clearRect(0, 0, WIDTH, HEIGHT)
     setCoordinates([coord])
     setLastCoordRecorded(Date.now())
   }
@@ -32,7 +46,7 @@ function DrawingInput({ coordinates, setCoordinates }) {
     if (!isPressed) {
       return;
     }
-    if (lastCoordRecorded + (1000 / INPUT_FREQUENCY) < Date.now()) {
+    if (lastCoordRecorded + (1000 / Constants.INPUT_FREQUENCY) < Date.now()) {
       setLastCoordRecorded(Date.now())
       const coord = convertEventToCoord(e, canvasRef.current)
       setCoordinates([...coordinates, coord])
@@ -40,14 +54,13 @@ function DrawingInput({ coordinates, setCoordinates }) {
   }
   const handleUp = (e) => {
     setIsPressed(false)
-    console.log(coordinates)
   }
 
   return (
     <canvas
       id="canvas"
-      width={WIDTH}
-      height={HEIGHT}
+      width={Constants.WIDTH}
+      height={Constants.HEIGHT}
       ref={canvasRef}
       onPointerDown={handleDown}
       onPointerUp={handleUp}
