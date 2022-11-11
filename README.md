@@ -3,4 +3,4 @@
 https://mattpk.github.io/fourier-transform/
 
 ## Demo:
-![Drawing a star](https://mattpk.github.io/fourier-transform/public/demo.gif)
+![Drawing a star](https://mattpk.github.io/fourier-transform/demo.gif)
