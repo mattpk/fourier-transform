@@ -9,10 +9,12 @@ function App() {
   return (
     <>
       <h2>Fourier Transforms</h2>
+      <p>Draw a shape:</p>
       <DrawingInput
         coordinates={coordinates}
         setCoordinates={setCoordinates}
       />
+      <p>tbd: some cool fourier thing here</p>
     </>
   )
 }
